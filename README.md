@@ -1,4 +1,4 @@
-A two-stage pipeline for single-cell RNA sequencing (scRNA-seq) analysis that combines dropout imputation and prior-knowledge-guided cell type identification into a single run.
+A two-stage pipeline for single-cell RNA sequencing (scRNA-seq) analysis that combines dropout imputation and two parallel feature-selection branches
 
 ---
 
@@ -19,17 +19,18 @@ scRNA-seq data often contains zero expression values that are not truly zero, bu
 
 This step relies purely on the structure of the data itself — no external biological information is used yet. Its goal is simply to recover expression signal that dropout noise would otherwise hide from the clustering stage that follows.
 
-### Stage 2 — Pathway-Guided Clustering
+### Stage 2 — Two parallel feature-selection
 
 Using the imputed expression matrix from Stage 1, this stage identifies biologically meaningful cell type groups. Unlike conventional clustering that selects genes based on statistical criteria alone (e.g. variance or mean expression), this stage incorporates **prior biological knowledge in the form of curated pathway gene sets** to guide which genes are allowed to drive the clustering result. The reasoning is that genes belonging to known biological pathways are more likely to carry real cell-type-defining signal than genes selected by statistical variance alone, which can be inflated by technical noise.
 
 The stage works as follows:
 
-1. **Pathway-informed gene filtering** — genes are first restricted to those annotated within curated biological pathways, then further filtered by expression and variance criteria. This step is what distinguishes the method from purely data-driven clustering: pathway membership acts as a biological prior that constrains feature selection toward genes with known functional relevance, rather than relying on statistical signal alone.
-2. Building an ensemble of KNN graphs using UMAP and PCA dimensionality reductions on the pathway-filtered gene sets
-3. Aggregating graphs into a consensus network
-4. Applying Louvain community detection to partition cells into clusters
-5. Merging over-partitioned clusters using t-test-based separation scores on top marker genes
+1. Primary branch—genes are first restricted to those annotated within curated biological pathways, then further filtered by expression and variance criteria. This step is what distinguishes the method from purely data-driven clustering: pathway membership acts as a biological prior that constrains feature selection toward genes with known functional relevance, rather than relying on statistical signal alone.
+2. Secondary branch—this acts as a rescue mechanism to ensure that some critical genes may be excluded from the primary selection because they are not annotated in the gene pathway. We isolated genes from the original gene set (before the primary branch) that rank in both the top 10% expression and variance across all samples. 
+3. Building an ensemble of KNN graphs using UMAP and PCA dimensionality reductions on the pathway-filtered gene sets
+4. Aggregating graphs into a consensus network
+5. Applying Louvain community detection to partition cells into clusters
+6. Merging over-partitioned clusters using t-test-based separation scores on top marker genes
 
 By anchoring feature selection to biological pathways rather than statistics alone, this stage aims to produce clusters that are not just statistically separable, but also more interpretable and biologically grounded.
 
