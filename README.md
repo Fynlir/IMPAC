@@ -52,13 +52,13 @@ pip install numpy pandas scipy scikit-learn joblib anndata umap-learn igraph net
 | `dataset_label.csv` | Cell type labels for evaluation (optional, used for ARI/NMI/Purity metrics) |
 | `exported_pathways.csv` | Biological pathway gene sets — rows are pathway names, columns are member genes. This file is the source of prior biological knowledge used in Stage 2. |
 
-> The pipeline accepts any normalized scRNA-seq dataset. Simply update the file paths in **Section 1** of `main_pipeline.py` to point to your own data.
+> The pipeline accepts any normalized scRNA-seq dataset. Simply update the file paths in **Section 1** of `main_pipeline-IMPAC.py` to point to your own data.
 
 ---
 
 ## Usage
 
-**1. Update the input file paths in Section 1 of `main_pipeline.py`:**
+**1. Update the input file paths in Section 1 of `main_pipeline-IMPAC.py`:**
 
 ```python
 logX = pd.read_csv("your_expression_data.csv", index_col=0, engine="python")
@@ -69,7 +69,7 @@ pathways_df = pd.read_csv("exported_pathways.csv", index_col=0, low_memory=False
 **2. Run the pipeline:**
 
 ```bash
-python main_pipeline.py
+python main_pipeline-IMPAC.py
 ```
 
 **3. Output:**
